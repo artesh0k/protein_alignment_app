@@ -1,0 +1,126 @@
+<style>
+    .scroll-cell {
+        max-width: 60vw;
+        overflow-x: auto;
+        white-space: nowrap;
+        font-family: 'Courier New', monospace;
+        padding: 5px;
+    }
+
+    /* Styles for loading indicator */
+    #loadingIndicator {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+{% extends "base.html" %}
+{% block title %} Homepage {% endblock %}
+
+{% block content %}
+
+    <br>
+
+    <h1>Hi, there! { A C D E F G H I K L M N P Q R S T V W Y }</h1>
+    <form method="post" id="alignmentForm">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="basic-url">Enter protein sequence</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" pattern="[ACDEFGHIKLMNPQRSTVWY]+" placeholder="here..."
+                       aria-label="Protein sequence"
+                       aria-describedby="basic-addon1" id="sequence_1" name="sequence_1">
+            </div>
+
+            <label for="basic-url">Or upload a file</label>
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="inputGroupFile01">
+                    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+                </div>
+            </div>
+
+            <label for="basic-url">Choose substitution matrix</label>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Substitution matrix</label>
+                </div>
+                <select class="custom-select" id="sub_mat_name" name="sub_mat_name">
+                    <option value="PAM30">PAM30</option>
+                    <option value="PAM70">PAM70</option>
+                    <option value="PAM250">PAM250</option>
+                    <option value="BLOSUM45">BLOSUM45</option>
+                    <option value="BLOSUM50">BLOSUM50</option>
+                    <option value="BLOSUM62" selected="selected">BLOSUM62</option>
+                    <option value="BLOSUM80">BLOSUM80</option>
+                    <option value="BLOSUM90">BLOSUM90</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-dark">Submit</button>
+    </form>
+
+    <!-- Loading indicator -->
+    <div id="loadingIndicator" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <div id="resultsContainer">
+
+    </div>
+
+    <script>
+        document.getElementById('alignmentForm').addEventListener('submit', function (event) {
+            event.preventDefault();  // Preventing standard form submission
+
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+
+            // Receive data from the form
+            let formData = new FormData(this);
+
+            // Sending AJAX-request
+            fetch("{% url 'get_alignment_results' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading indicator
+                    document.getElementById('loadingIndicator').style.display = 'none';
+
+                    // Insert HTML with the results
+                    document.getElementById('resultsContainer').innerHTML = data.html;
+                })
+                .catch(error => {
+                    // Hide loading indicator
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+
+{% endblock %}

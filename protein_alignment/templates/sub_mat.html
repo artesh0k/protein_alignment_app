@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %} SubMat {% endblock %}
+
+{% block content %}
+    <br>
+    <h1>Substitution matrices</h1>
+
+    <p> Matice <span class="font-weight-bold">PAM</span> (Percent Accepted Mutation) vytvořila v roce 1978 Margaret
+        Dayhoffová a její tým.
+        PAM matice jsou sestavovány na základě sledování mutací v evolučně blízce příbuzných sekvencích proteinů,
+        přičemž vyšší číslo PAM znamená větší počet mutací.
+    </p>
+    <p><span class="font-weight-bold">BLOSUM</span> (BLOcks Substitution Matrix) matici vyvinuli Henikoffovi v roce 1992.
+        BLOSUM matice jsou vytvářeny analýzou konzervovaných bloků proteinových sekvencí a zohledňují frekvenci
+        nahrazování aminokyselin v různě vzdálených sekvencích. Nižší číslo BLOSUM znamená vyšší podobnost sekvencí
+        použitých při tvorbě matice.
+    </p>
+    <p>Tyto matice se používají k hodnocení podobnosti a evolučních vztahů mezi proteinovými sekvencemi. Pomáhají
+        například při vyhledávání homologních sekvencí, v algoritmech pro sekvenční zarovnávání a v identifikaci funkčně
+        důležitých oblastí proteinů.
+    </p>
+    <br>
+    {% for sub_mat_name, sub_mat in sub_matrices.items %}
+        <br>
+        <h2 class="text-uppercase">{{ sub_mat_name }}</h2>
+        <pre>{{ sub_mat }}</pre>
+    {% endfor %}
+{% endblock %}
