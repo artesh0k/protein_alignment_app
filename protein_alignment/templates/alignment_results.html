@@ -3,7 +3,7 @@
 {% if sequence_1 %}
     <h4>Time: {{ time }}</h4>
     <h4>Input Sequence: </h4>
-    <p>{{ sequence_1 }}</p>
+    <span style="white-space: normal; word-wrap: break-word; max-width: 100%;">{{ sequence_1 }}</span>
 {% endif %}
 <br>
 <h2>Similarity Scores:</h2>
@@ -12,7 +12,9 @@
         <thead>
         <tr>
             <th>Aligned Sequence</th>
-            <th>Information</th>
+            <th>Similarity</th>
+            <th>Identity</th>
+            <th>Other</th>
         </tr>
         </thead>
         <tbody>
@@ -21,12 +23,14 @@
                 <td class="scroll-cell" style=" font-family: 'Courier New', monospace;">
                     {{ values.2|safe }} <br> {{ values.3|safe }}</td>
                 <td>
-                    Similarity: {{ values.0 }}% <br>
-                    Identity: {{ values.1 }}%<br>
-                    Gaps: {{ values.5 }}<br>
-                    Score: {{ values.7 }}<br>
-                    Length: {{ values.6 }}<br>
-                    <span data-toggle="tooltip" data-placement="top" title="{{ values.4 }}">~Name~</span>
+                    {{ values.0 }}%
+                </td>
+                <td>
+                    {{ values.1 }}%
+                </td>
+                <td>
+                     Score: {{ values.7 }} Gaps: {{ values.5 }} <br>
+                    Length: {{ values.6 }} <span data-toggle="tooltip" data-placement="top" title="{{ values.4 }}">~Name~</span>
                 </td>
             </tr>
         {% endfor %}

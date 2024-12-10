@@ -38,11 +38,20 @@ def substitution_matrices_info(request):
 def get_alignment_results(request):
     if request.method == 'POST':
         sequence_1 = request.POST.get('sequence_1', '')
+        sequence_file = request.FILES.get('sequence_file')
         sub_mat_name = request.POST.get('sub_mat_name', '')
+
+        if sequence_1 == "" and sequence_file is not None:
+            try:
+                name_of_sequence_1, sequence_1 = fasta_line_reader(sequence_file)
+            except Exception as e:
+                return JsonResponse({'error': f'Error reading file: {e}'}, status=400)
+        elif sequence_1 == "":
+            return JsonResponse({'error': 'Please provide either a sequence or a valid FASTA file.'}, status=400)
 
         results = {}
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        file_path = os.path.join(base_dir, '../insulin_proteins-40.fasta')
+        file_path = os.path.join(base_dir, '../insulin_proteins-225.fasta')
 
         start_time = time.time()
 
@@ -93,7 +102,7 @@ def highlight_matches(seq1, seq2, sub_mat_name):
 
 
 def fasta_line_reader(sequence_file):
-    lines = open(sequence_file).readlines()
+    lines = sequence_file.read().decode('utf-8').splitlines()
     sequence_name_row = lines[0][1:]
     sequence = ''.join(line.strip() for line in lines[1:])
     return sequence_name_row.strip(), sequence
@@ -176,7 +185,7 @@ def calculate_score(sequence_1, sequence_2, sub_mat_name):
 
 
 def smith_waterman(sequence_1, sequence_2, sub_mat_name):
-    # Creat Matrices
+    # Creating the matrices
     main_matrix = np.zeros((len(sequence_1) + 1, len(sequence_2) + 1))
     match_checker_matrix = np.zeros((len(sequence_1), len(sequence_2)))
 

@@ -1,6 +1,6 @@
 <style>
     .scroll-cell {
-        max-width: 60vw;
+        max-width: 40vw;
         overflow-x: auto;
         white-space: nowrap;
         font-family: 'Courier New', monospace;
@@ -17,7 +17,7 @@
         width: 50px;
         height: 50px;
         border: 6px solid #f3f3f3;
-        border-top: 6px solid #3498db;
+        border-top: 6px solid #197b28;
         border-radius: 50%;
         animation: spin 1s linear infinite;
         margin: 0 auto 10px;
@@ -51,10 +51,11 @@
                        aria-describedby="basic-addon1" id="sequence_1" name="sequence_1">
             </div>
 
-            <label for="basic-url">Or upload a file</label>
+            <label for="basic-url">Or upload a file (.fasta format)</label>
             <div class="input-group mb-3">
                 <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="inputGroupFile01">
+                    <input type="file" class="custom-file-input" id="inputGroupFile01" name="sequence_file"
+                           accept=".fasta,.fa">
                     <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
                 </div>
             </div>
@@ -90,11 +91,18 @@
     </div>
 
     <script>
+        document.getElementById('inputGroupFile01').addEventListener('change', function () {
+            let fileName = this.files[0] ? this.files[0].name : "Choose file";
+            this.nextElementSibling.innerText = fileName;
+        });
+
+
         document.getElementById('alignmentForm').addEventListener('submit', function (event) {
             event.preventDefault();  // Preventing standard form submission
 
             // Show loading indicator
             document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('resultsContainer').style.display = 'none';
 
             // Receive data from the form
             let formData = new FormData(this);
@@ -114,10 +122,12 @@
 
                     // Insert HTML with the results
                     document.getElementById('resultsContainer').innerHTML = data.html;
+                    document.getElementById('resultsContainer').style.display = 'block';
                 })
                 .catch(error => {
                     // Hide loading indicator
                     document.getElementById('loadingIndicator').style.display = 'none';
+                    document.getElementById('resultsContainer').innerHTML = '<p class="text-danger">An error occurred while processing the request. Please try again.</p>';
                     console.error('Error:', error);
                 });
         });
